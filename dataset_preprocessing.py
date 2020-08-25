@@ -1,15 +1,11 @@
 import re
 import os
-import time
 import logging
 import numpy as np
 import pandas as pd
 from helper import transliterate
 
 data_dir = 'Urdu datasets/'
-regex_chars = '[\'".-]'
-regex_alphabets = '[^a-zA-z]'
-timestamp = str(time.time()).replace('.', '')
 
 logging.basicConfig(filename='app.log', filemode='w', format='%(message)s')
 
@@ -66,7 +62,7 @@ with open('counter_roman_urdu.txt', 'w') as out:
 data_series = pd.read_csv(data_dir + 'imdb_urdu_reviews.csv').iloc[:, 0]
 with open('imdb_urdu_reviews_roman_urdu.txt', 'w') as out:
     for data in data_series:
-        for index,sentence in enumerate(data.split('۔')):
+        for index, sentence in enumerate(data.split('۔')):
             out.write(transliterate(sentence) + '\n')
             logging.warning('imdb_urdu_reviews_roman_urdu.txt: %d' % index)
 
@@ -75,7 +71,7 @@ with open(data_dir + 'uner.txt', encoding="utf16") as file:
     text = file.read()
 
 with open('uner_roman_urdu.txt', 'w') as out:
-    for index,sentence in enumerate(sub_nextline(re.sub(r"</?[A-Z]+>", ' ', text)).split('۔')):
+    for index, sentence in enumerate(sub_nextline(re.sub(r"</?[A-Z]+>", ' ', text)).split('۔')):
         out.write(transliterate(sentence) + '\n')
         logging.warning('uner_roman_urdu.txt: %d' % index)
 
@@ -90,6 +86,6 @@ for f_name in os.listdir(data_dir + 'news/Real'):
         text += ' ' + file.read()
 
 with open('news_roman_urdu.txt', 'w') as out:
-    for index,sentence in enumerate(sub_nextline(text).split('۔')):
+    for index, sentence in enumerate(sub_nextline(text).split('۔')):
         out.write(transliterate(sentence) + '\n')
         logging.warning('news_roman_urdu.txt: %d' % index)
