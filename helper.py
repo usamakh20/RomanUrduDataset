@@ -8,12 +8,19 @@ url = 'https://www.ijunoon.com/transliteration/'
 
 def transliterate(text, urdu_to_roman=True):
     transliteration_url = url + 'urdu-to-roman/' if urdu_to_roman else url
-
     transliterated = []
     for sentence in re.findall(r'(.{1,500})(?=\s|$)', text):
-        r = requests.post(transliteration_url, data={'text': sentence})
-        soup = BeautifulSoup(r.text, 'html.parser')
-        transliterated.append(soup.find('div', id='ctl00_inpageResult').p.text)
+        if not sentence.isspace():
+            while True:
+                try:
+                    r = requests.post(transliteration_url, data={'text': sentence})
+                    soup = BeautifulSoup(r.text, 'html.parser')
+                    transliterated.append(soup.find('div', id='ctl00_inpageResult').p.text)
+                    break
+                except Exception as e:
+                    print(e)
+                    time.sleep(5)
+                    pass
 
     return ' '.join(transliterated)
 
