@@ -60,8 +60,8 @@ def fun2(count):
 def fun3(count):
     data_series = pd.read_csv(data_dir + 'imdb_urdu_reviews.csv').iloc[:, 0]
     with open('imdb_urdu_reviews_roman_urdu.txt', 'a') as out:
-        for data in data_series:
-            process(out, count, enumerate(data.split('۔')))
+        for i, data in enumerate(data_series):
+            process(out, count, enumerate(data.split('۔')), i)
 
 
 def fun4(count):
@@ -86,15 +86,21 @@ def fun5(count):
         process(out, count, enumerate(sub_nextline(text).split('۔')))
 
 
-def process(out_file, count, numbered_sentences):
+def process(out_file, count, numbered_sentences, i=0):
     total_time = 0
+    start=False
     for index, sentence in numbered_sentences:
-        if index > count:
+        if index==count:
+            start=True
+            pass
+
+        if start:
             start_time = time.time()
             out_file.write(transliterate(sentence) + '\n')
             current_time = time.time() - start_time
             total_time += current_time
-            status = "Avg. Time: %.2f s  Time Taken: %.2f s  Words: %s  line: %s" % (total_time / (index - count),current_time, len(sentence), index)
+            status = "Avg. Time: %.2f s  Time Taken: %.2f s  Words: %s  line: %s" % (
+                total_time / (index - count), current_time, len(sentence), int(str(i) + str(index)))
             logging.warning(status)
             print(status)
 
