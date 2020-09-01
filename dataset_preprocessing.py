@@ -4,6 +4,7 @@ import time
 import logging
 import numpy as np
 import pandas as pd
+from datetime import datetime
 from helper import transliterate
 
 data_dir = 'Urdu datasets/'
@@ -61,7 +62,7 @@ def fun3(count):
     data_series = pd.read_csv(data_dir + 'imdb_urdu_reviews.csv').iloc[:, 0]
     with open('imdb_urdu_reviews_roman_urdu.txt', 'a') as out:
         for i, data in enumerate(data_series):
-            process(out, count, enumerate(data.split('۔')), i)
+            process(out, count, enumerate(data.split('۔')), i > count, i)
 
 
 def fun4(count):
@@ -86,26 +87,23 @@ def fun5(count):
         process(out, count, enumerate(sub_nextline(text).split('۔')))
 
 
-def process(out_file, count, numbered_sentences, i=0):
+def process(out_file, count, numbered_sentences, start=False, i=0):
     total_time = 0
-    start=False
     for index, sentence in numbered_sentences:
-        if index==count:
-            start=True
-            pass
-
-        if start:
+        if start or index > count:
             start_time = time.time()
             out_file.write(transliterate(sentence) + '\n')
             current_time = time.time() - start_time
             total_time += current_time
-            status = "Avg. Time: %.2f s  Time Taken: %.2f s  Words: %s  line: %s" % (
-                total_time / (index - count), current_time, len(sentence), int(str(i) + str(index)))
+            status = "Timestamp: %s  Avg. characters per second: %.2f  Time Taken: %.2f s  characters: %s  line: %s" % (
+                datetime.now().strftime("%-d %b %Y , %-I:%M:%S %p"), len(sentence) / current_time if current_time else 0, current_time, len(sentence),
+                index if i == 0 else i)
             logging.warning(status)
             print(status)
 
 
 if __name__ == '__main__':
+
     choice = input("Enter function: ")
     if os.path.isfile(f'fun{choice}.log'):
         with open(f'fun{choice}.log', 'r') as file:
