@@ -5,13 +5,13 @@ import logging
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from helper import transliterate
+from helper import transliterate, Colors
 
 data_dir = 'Urdu datasets/'
 
 
 def sub_initial_urdu(string):
-    return re.sub(r"[^a-zA-z0-9,() ]", ' ', string.lower())
+    return re.sub(r"[/\\<>]", ' ', string)
 
 
 def sub_initial(string):
@@ -32,6 +32,17 @@ def sub_space(string):
 
 def sub_nextline(string):
     return re.sub(r'\n', ' ', string)
+
+
+def output_color(words_per_second):
+    if words_per_second == 0:
+        print(Colors.NORMAL, end='')
+    elif words_per_second < 20:
+        print(Colors.RED, end='')
+    elif words_per_second < 50:
+        print(Colors.YELLOW, end='')
+    else:
+        print(Colors.GREEN, end='')
 
 
 def fun1():
@@ -62,7 +73,7 @@ def fun3(count):
     data_series = pd.read_csv(data_dir + 'imdb_urdu_reviews.csv').iloc[:, 0]
     with open('imdb_urdu_reviews_roman_urdu.txt', 'a') as out:
         for i, data in enumerate(data_series):
-            process(out, count, enumerate(data.split('۔')), i > count, i)
+            process(out, count, enumerate(sub_space(sub_initial_urdu(data)).split('۔')), i > count, i)
 
 
 def fun4(count):
@@ -95,8 +106,11 @@ def process(out_file, count, numbered_sentences, start=False, i=0):
             out_file.write(transliterate(sentence) + '\n')
             current_time = time.time() - start_time
             total_time += current_time
+            words_per_second = (len(sentence) / current_time if current_time else 0)
+            output_color(words_per_second)
             status = "Timestamp: %s  Avg. characters per second: %.2f  Time Taken: %.2f s  characters: %s  line: %s" % (
-                datetime.now().strftime("%-d %b %Y , %-I:%M:%S %p"), len(sentence) / current_time if current_time else 0, current_time, len(sentence),
+                datetime.now().strftime("%-d %b %Y , %-I:%M:%S %p"),
+                words_per_second, current_time, len(sentence),
                 index if i == 0 else i)
             logging.warning(status)
             print(status)
@@ -115,3 +129,5 @@ if __name__ == '__main__':
 
     logging.basicConfig(filename=f'fun{choice}.log', filemode='a', format='%(message)s')
     locals()['fun' + choice](value)
+
+# Todo: uppc corpus, multisenti-master,  urmono
