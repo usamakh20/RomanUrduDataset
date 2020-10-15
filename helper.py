@@ -36,9 +36,9 @@ def transliterate(text, urdu_to_roman=True):
 
 
 # Todo: Generalize transliteration and translation function for large text and failed requests
-def translate(text):
+def trans(text,urdu_to_roman=True,transliterate=True):
     try:
-        r = requests.get(base_translation_url, headers=headers,params={'text': text}, timeout=300)
+        r = requests.get(base_translation_url, headers=headers, params={'text': text}, timeout=300)
         soup = BeautifulSoup(r.text, 'html.parser')
         return soup.find('div', id='ctl00_inpageResult').find_all('p')[-1].text.strip()
     except Exception as e:
