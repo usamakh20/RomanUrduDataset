@@ -10,6 +10,7 @@ from helper import trans, Colors
 urdu_data_dir = 'Urdu datasets/'
 eng_data_dir = 'English datasets/'
 roman_urdu_data_dir = 'Roman urdu datasets/'
+logs_dir = 'logs/'
 
 
 def sub_initial_urdu(string):
@@ -103,7 +104,7 @@ def fun5(count):
 def fun6(count):
     for i in range(1, 3):
         with open(eng_data_dir + 'books_large_p' + str(i) + '.txt', 'r') as file:
-            with open('book_corpus_roman_urdu.txt', 'a') as out:
+            with open(roman_urdu_data_dir+'book_corpus_roman_urdu.txt', 'a') as out:
                 for index, sentence in enumerate(file):
                     if index > count or count == 0:
                         process(out, sentence.strip(), i=index, transliterate=True)
@@ -136,15 +137,15 @@ def process(out_file, sentence, total_time=0, i=0, transliterate=False):
 if __name__ == '__main__':
 
     choice = input("Enter function: ")
-    if os.path.isfile(f'fun{choice}.log'):
-        with open(f'fun{choice}.log', 'r') as log_file:
+    if os.path.isfile(logs_dir+f'fun{choice}.log'):
+        with open(logs_dir+f'fun{choice}.log', 'r') as log_file:
             for line in log_file:
                 pass
             value = int(line.split(':')[-1])
     else:
         value = 0
 
-    logging.basicConfig(filename=f'fun{choice}.log', filemode='a', format='%(message)s')
+    logging.basicConfig(filename=logs_dir+f'fun{choice}.log', filemode='a', format='%(message)s')
     locals()['fun' + choice](value)
 
 # Todo: uppc corpus, multisenti-master,  urmono
