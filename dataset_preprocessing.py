@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from helper import transliterate, translate, Colors
+from helper import trans, Colors
 
 urdu_data_dir = 'Urdu datasets/'
 eng_data_dir = 'English datasets/'
@@ -105,22 +105,22 @@ def fun6(count):
             with open('book_corpus_roman_urdu.txt', 'a') as out:
                 for index, sentence in enumerate(file):
                     if index > count or count == 0:
-                        process(out, sentence.strip(), i=index, transl=True)
+                        process(out, sentence.strip(), i=index, transliterate=True)
 
 
-def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transl=False):
+def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
     total_time = 0
     for index, sentence in numbered_sentences:
         if start or index > count:
-            process(out_file, sentence, total_time, index if i == 0 else i, transl)
+            process(out_file, sentence, total_time, index if i == 0 else i, transliterate)
 
 
-def process(out_file, sentence, total_time=0, i=0, transl=False):
+def process(out_file, sentence, total_time=0, i=0, transliterate=False):
     start_time = time.time()
-    if transl:
-        out_file.write(transliterate(translate(sentence)) + '\n')
+    if transliterate:
+        out_file.write(trans(trans(sentence, transliterate=transliterate)) + '\n')
     else:
-        out_file.write(transliterate(sentence) + '\n')
+        out_file.write(trans(sentence) + '\n')
     current_time = time.time() - start_time
     total_time += current_time
     words_per_second = (len(sentence) / current_time if current_time else 0)
