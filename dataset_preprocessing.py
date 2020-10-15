@@ -9,6 +9,7 @@ from helper import trans, Colors
 
 urdu_data_dir = 'Urdu datasets/'
 eng_data_dir = 'English datasets/'
+roman_urdu_data_dir = 'Roman urdu datasets/'
 
 
 def sub_initial_urdu(string):
@@ -66,13 +67,13 @@ def fun2(count):
     with open(urdu_data_dir + 'counter.txt') as file:
         text = file.read()
 
-    with open('counter_roman_urdu.txt', 'a') as out:
+    with open(roman_urdu_data_dir + 'counter_roman_urdu.txt', 'a') as out:
         process_sentences(out, count, enumerate(sub_nextline(text).split('۔')))
 
 
 def fun3(count):
     data_series = pd.read_csv(urdu_data_dir + 'imdb_urdu_reviews.csv').iloc[:, 0]
-    with open('imdb_urdu_reviews_roman_urdu.txt', 'a') as out:
+    with open(roman_urdu_data_dir + 'imdb_reviews_roman_urdu.txt', 'a') as out:
         for i, data in enumerate(data_series):
             process_sentences(out, count, enumerate(sub_space(sub_initial_urdu(data)).split('۔')), i > count, i)
 
@@ -81,7 +82,7 @@ def fun4(count):
     with open(urdu_data_dir + 'uner.txt', encoding="utf16") as file:
         text = file.read()
 
-    with open('uner_roman_urdu.txt', 'a') as out:
+    with open(roman_urdu_data_dir + 'uner_roman_urdu.txt', 'a') as out:
         process_sentences(out, count, enumerate(sub_nextline(re.sub(r"</?[A-Z]+>", ' ', text)).split('۔')))
 
 
@@ -95,7 +96,7 @@ def fun5(count):
         with open(urdu_data_dir + 'news/Real/' + f_name) as file:
             text += ' ' + file.read()
 
-    with open('news_roman_urdu.txt', 'a') as out:
+    with open(roman_urdu_data_dir + 'news_roman_urdu.txt', 'a') as out:
         process_sentences(out, count, enumerate(sub_nextline(text).split('۔')))
 
 

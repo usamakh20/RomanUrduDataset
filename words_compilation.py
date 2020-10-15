@@ -3,13 +3,13 @@ import time
 import numpy as np
 import pandas as pd
 from collections import Counter
-from helper import transliterate, is_english_letters
+from helper import trans, is_english_letters
 
 data_dir = 'Urdu datasets/'
 new_words = np.empty(0, dtype=str)
 regex_chars = '[\'".-]'
 regex_alphabets = '[^a-zA-z]'
-base_filename = 'Roman_Urdu_Words.csv'
+base_filename = 'Roman urdu datasets/Roman_Urdu_Words.csv'
 timestamp = str(time.time()).replace('.', '')
 
 choice = input('Merge into existing ' + base_filename + ' (y/n): ')
@@ -65,7 +65,7 @@ for filename in ['urdu_stopwords.txt', 'urdu_stopwords_2.txt', 'urdu_stopwords_3
         for line_number, line in enumerate(file):
             if not line.isspace():
                 preprocessed_line = re.sub('\n', '', line.strip())
-                word = re.sub(regex_alphabets, '', transliterate(preprocessed_line))
+                word = re.sub(regex_alphabets, '', trans(preprocessed_line))
                 if word.strip():
                     new_words = np.append(new_words, word.strip())
 
