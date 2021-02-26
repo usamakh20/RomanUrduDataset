@@ -13,6 +13,12 @@ roman_urdu_data_dir = 'Roman urdu datasets/'
 logs_dir = 'logs/'
 
 
+def flow(seed, funcs):
+    for func in funcs:
+        seed = func(seed)
+    return seed
+
+
 def sub_initial_urdu(string):
     return re.sub(r"[/\\<>]", ' ', string)
 
@@ -35,6 +41,10 @@ def sub_space(string):
 
 def sub_nextline(string):
     return re.sub(r'\n', ' ', string)
+
+
+def sub_quote(string):
+    return re.sub(r'\'', ' ', string)
 
 
 def output_color(words_per_second):
@@ -102,12 +112,13 @@ def fun5(count):
 
 
 def fun6(count):
+    mappings = [str.strip, sub_quote, sub_space]
     for i in range(1, 3):
         with open(eng_data_dir + 'books_large_p' + str(i) + '.txt', 'r') as file:
-            with open(roman_urdu_data_dir+'book_corpus_roman_urdu.txt', 'a') as out:
+            with open(roman_urdu_data_dir + 'book_corpus_roman_urdu.txt', 'a') as out:
                 for index, sentence in enumerate(file):
                     if index > count or count == 0:
-                        process(out, sentence.strip(), i=index, transliterate=True)
+                        process(out, flow(sentence, mappings), i=index)
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
@@ -120,9 +131,9 @@ def process_sentences(out_file, count, numbered_sentences, start=False, i=0, tra
 def process(out_file, sentence, total_time=0, i=0, transliterate=False):
     start_time = time.time()
     if transliterate:
-        out_file.write(trans(trans(sentence, transliterate=transliterate)) + '\n')
-    else:
         out_file.write(trans(sentence) + '\n')
+    else:
+        out_file.write(trans(trans(sentence, transliterate=transliterate)) + '\n')
     current_time = time.time() - start_time
     total_time += current_time
     words_per_second = (len(sentence) / current_time if current_time else 0)
@@ -137,15 +148,15 @@ def process(out_file, sentence, total_time=0, i=0, transliterate=False):
 if __name__ == '__main__':
 
     choice = input("Enter function: ")
-    if os.path.isfile(logs_dir+f'fun{choice}.log'):
-        with open(logs_dir+f'fun{choice}.log', 'r') as log_file:
+    if os.path.isfile(logs_dir + f'fun{choice}.log'):
+        with open(logs_dir + f'fun{choice}.log', 'r') as log_file:
             for line in log_file:
                 pass
             value = int(line.split(':')[-1])
     else:
         value = 0
 
-    logging.basicConfig(filename=logs_dir+f'fun{choice}.log', filemode='a', format='%(message)s')
+    logging.basicConfig(filename=logs_dir + f'fun{choice}.log', filemode='a', format='%(message)s')
     locals()['fun' + choice](value)
 
 # Todo: uppc corpus, multisenti-master,  urmono
