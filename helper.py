@@ -40,14 +40,14 @@ class Colors:
 
 def trans(text, urdu_to_roman=True, transliterate=True):
     result = []
-    length = translation_limit if transliterate else translation_limit
+    length = transliteration_limit if transliterate else translation_limit
     for sentence in re.findall(r'(.{1,' + re.escape(str(length)) + r'})(?=\s|$)', text):
         while True:
             try:
                 if transliterate:
                     transliteration_url = base_transliteration_url + 'urdu-to-roman/' \
                         if urdu_to_roman else base_transliteration_url
-                    r = requests.post(transliteration_url, headers=headers, data={'text': sentence}, timeout=300)
+                    r = requests.post(transliteration_url, headers=headers, data={'text': preprocess_urdu(sentence)}, timeout=300)
                 else:
                     r = requests.get(base_translation_url, headers=headers, params={'text': sentence}, timeout=300)
 
@@ -66,6 +66,15 @@ def trans(text, urdu_to_roman=True, transliterate=True):
 
 def is_english_letters(string):
     return all(ord(c) < 128 and (c.isalpha() or c.isspace()) for c in string)
+
+
+def preprocess_urdu(string):
+    """
+    Required for Ijunoon Urdu-Roman transliteration API
+    :param string:
+    :return: preprocessed string
+    """
+    return string.replace('یٰ', 'ی')
 
 
 if __name__ == '__main__':
