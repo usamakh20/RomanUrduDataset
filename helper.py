@@ -2,12 +2,14 @@ import re
 import time
 import requests
 from bs4 import BeautifulSoup
+from googletrans import Translator
 
 base_transliteration_url = 'https://www.ijunoon.com/transliteration/'
 base_translation_url = 'https://translate.ijunoon.com/'
 transliteration_limit = 500
 translation_limit = 1500
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Firefox/80.0'}
+translator = Translator()
 
 
 class Colors:
@@ -47,7 +49,8 @@ def trans(text, urdu_to_roman=True, transliterate=True):
                 if transliterate:
                     transliteration_url = base_transliteration_url + 'urdu-to-roman/' \
                         if urdu_to_roman else base_transliteration_url
-                    r = requests.post(transliteration_url, headers=headers, data={'text': preprocess_urdu(sentence)}, timeout=300)
+                    r = requests.post(transliteration_url, headers=headers, data={'text': preprocess_urdu(sentence)},
+                                      timeout=300)
                 else:
                     r = requests.get(base_translation_url, headers=headers, params={'text': sentence}, timeout=300)
 
@@ -77,6 +80,17 @@ def preprocess_urdu(string):
     return string.replace('یٰ', 'ی')
 
 
+def translate(text, src='auto', dst='ur'):
+    """
+    default english to urdu translation using google API
+    :param text: text to translate
+    :param src: source language. defaults to auto
+    :param dst: destination language defaults to urdu
+    :return: translated text
+    """
+    return translator.translate(text, dest=dst, src=src).text
+
+
 if __name__ == '__main__':
     start_time = time.time()
     print(trans('تبدیل'))
@@ -86,4 +100,7 @@ if __name__ == '__main__':
     print("Time Taken: %.2f s" % (time.time() - start_time))
     start_time = time.time()
     print(trans('change', transliterate=False))
+    print("Time Taken: %.2f s" % (time.time() - start_time))
+    start_time = time.time()
+    print(translate('summer vacations supposed to be fun , right ?'))
     print("Time Taken: %.2f s" % (time.time() - start_time))

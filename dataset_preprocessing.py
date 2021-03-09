@@ -5,12 +5,22 @@ import logging
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from helper import trans, Colors
+from helper import trans, Colors, translate
 
 urdu_data_dir = 'Urdu datasets/'
 eng_data_dir = 'English datasets/'
 roman_urdu_data_dir = 'Roman urdu datasets/'
 logs_dir = 'logs/'
+
+
+def file_len(path):
+    if os.path.isfile(path):
+        with open(path) as f:
+            for i, l in enumerate(f):
+                pass
+        return i + 1
+    else:
+        return 0
 
 
 def flow(seed, funcs):
@@ -112,31 +122,37 @@ def fun5(count):
 
 
 def fun6(count):
+    """
+    changed to google API after line 3563015
+    :param count:
+    :return:
+    """
+    file_name_template = eng_data_dir + 'books_large_p{}.txt'
     mappings = [str.strip, sub_quote, sub_space]
+
     for i in range(1, 3):
-        with open(eng_data_dir + 'books_large_p' + str(i) + '.txt', 'r') as file:
+        prev_lines = file_len(file_name_template.format(str(i - 1)))
+        with open(file_name_template.format(str(i)), 'r') as file:
             with open(roman_urdu_data_dir + 'book_corpus_roman_urdu.txt', 'a') as out:
-                for index, sentence in enumerate(file):
+                for index, sentence in enumerate(file, start=prev_lines):
                     if index > count or count == 0:
                         process(out, flow(sentence, mappings), i=index)
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
-    total_time = 0
     for index, sentence in numbered_sentences:
         if start or index > count:
-            process(out_file, sentence, total_time, index if i == 0 else i, transliterate)
+            process(out_file, sentence, index if i == 0 else i, transliterate)
 
 
-def process(out_file, sentence, total_time=0, i=0, transliterate=False):
+def process(out_file, sentence, i=0, transliterate=False):
     start_time = time.time()
     if transliterate:
         out_file.write(trans(sentence) + '\n')
     else:
-        out_file.write(trans(trans(sentence, transliterate=transliterate)) + '\n')
+        out_file.write(trans(translate(sentence)) + '\n')
     current_time = time.time() - start_time
-    total_time += current_time
-    words_per_second = (len(sentence) / current_time if current_time else 0)
+    words_per_second = len(sentence) / current_time
     output_color(words_per_second)
     status = "Timestamp: %s  Avg. characters per second: %.2f  Time Taken: %.2f s  characters: %s  line: %s" % (
         datetime.now().strftime("%-d %b %Y , %-I:%M:%S %p"),
