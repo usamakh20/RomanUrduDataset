@@ -11,6 +11,7 @@ urdu_data_dir = 'Urdu datasets/'
 eng_data_dir = 'English datasets/'
 roman_urdu_data_dir = 'Roman urdu datasets/'
 logs_dir = 'logs/'
+glue_dir = '../glue-urdu/'
 
 
 def file_len(path):
@@ -137,6 +138,10 @@ def fun6(count):
                 for index, sentence in enumerate(file, start=prev_lines):
                     if index > count or count == 0:
                         process(out, flow(sentence, mappings), i=index)
+
+
+def fun7(count):
+    return 0
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
