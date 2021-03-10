@@ -125,6 +125,7 @@ def fun5(count):
 def fun6(count):
     """
     changed to google API after line 3563015
+    all functions after this use google API for English to Urdu
     :param count:
     :return:
     """
@@ -141,7 +142,12 @@ def fun6(count):
 
 
 def fun7(count):
-    return 0
+    mappings = [str.strip, lambda string: string.replace(',', '|')]
+    with open(glue_dir + 'XQuAD/Urdu/XQuAD_ur.csv') as file:
+        with open(glue_dir + 'XQuAD/Roman Urdu/XQuAD_ru.csv', 'a') as out:
+            for index, sentence in enumerate(file):
+                if index > count or count == 0:
+                    process(out, flow(sentence, mappings), i=index,transliterate=True)
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):

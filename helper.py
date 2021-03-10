@@ -88,7 +88,13 @@ def translate(text, src='auto', dst='ur'):
     :param dst: destination language defaults to urdu
     :return: translated text
     """
-    return translator.translate(text, dest=dst, src=src).text
+    while True:
+        try:
+            return translator.translate(text, dest=dst, src=src).text
+        except Exception as e:
+            print(e)
+            time.sleep(5)
+            pass
 
 
 if __name__ == '__main__':
