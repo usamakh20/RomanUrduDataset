@@ -39,7 +39,7 @@ def sub_initial(string):
 
 
 def sub_quotes(string):
-    return re.sub(r"\b'\B|\B'\b", ' ', string)
+    return re.sub(r"'\B|\B'|\"", ' ', string)
 
 
 def sub_characters(string):
@@ -142,12 +142,12 @@ def fun6(count):
 
 
 def fun7(count):
-    mappings = [str.strip, lambda string: string.replace(',', '|')]
+    mappings = [sub_initial_urdu,str.strip, sub_quotes, lambda string: string.replace(',', '|'), sub_space]
     with open(glue_dir + 'XQuAD/Urdu/XQuAD_ur.csv') as file:
         with open(glue_dir + 'XQuAD/Roman Urdu/XQuAD_ru.csv', 'a') as out:
             for index, sentence in enumerate(file):
                 if index > count or count == 0:
-                    process(out, flow(sentence, mappings), i=index,transliterate=True)
+                    process(out, flow(sentence, mappings), i=index, transliterate=True)
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
