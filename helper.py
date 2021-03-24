@@ -90,7 +90,11 @@ def translate(text, src='auto', dst='ur'):
     """
     while True:
         try:
-            return translator.translate(text, dest=dst, src=src).text
+            translated = translator.translate(text, dest=dst, src=src).text
+            if translated != text:
+                return translated
+            else:
+                raise Exception("Google API not working!!")
         except Exception as e:
             print(e)
             time.sleep(5)
