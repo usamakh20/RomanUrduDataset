@@ -40,7 +40,7 @@ class Colors:
 #     return ' '.join(transliterated)
 
 
-def trans(text, urdu_to_roman=True, transliterate=True):
+def trans(text, urdu_to_roman=True, transliterate=True, fallback=None):
     result = []
     length = transliteration_limit if transliterate else translation_limit
     for sentence in re.findall(r'(.{1,' + re.escape(str(length)) + r'})(?=\s|$)', text):
@@ -55,9 +55,11 @@ def trans(text, urdu_to_roman=True, transliterate=True):
                     r = requests.get(base_translation_url, headers=headers, params={'text': sentence}, timeout=300)
 
                 soup = BeautifulSoup(r.text, 'html.parser')
-                result.append(
-                    soup.find('div', id='ctl00_inpageResult' + ('ing' if transliterate else ''))
-                        .find_all('p')[-1].text.strip())
+                result_list = soup.find('div', id='ctl00_inpageResult' + ('ing' if transliterate else '')).find_all('p')
+                if not result_list and fallback:
+                    return fallback()
+                else:
+                    result.append(result_list[-1].text.strip())
                 break
             except Exception as e:
                 print(e)

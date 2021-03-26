@@ -130,7 +130,7 @@ def fun6(count):
     :return:
     """
     file_name_template = eng_data_dir + 'books_large_p{}.txt'
-    mappings = [str.strip, sub_quote, sub_space]
+    mappings = [str.strip, sub_quote, sub_initial_urdu, sub_space]
 
     for i in range(1, 3):
         prev_lines = file_len(file_name_template.format(str(i - 1)))
@@ -142,7 +142,7 @@ def fun6(count):
 
 
 def fun7(count):
-    mappings = [sub_initial_urdu,str.strip, sub_quotes, lambda string: string.replace(',', '|'), sub_space]
+    mappings = [sub_initial_urdu, str.strip, sub_quotes, lambda string: string.replace(',', '|'), sub_space]
     with open(glue_dir + 'XQuAD/Urdu/XQuAD_ur.csv') as file:
         with open(glue_dir + 'XQuAD/Roman Urdu/XQuAD_ru.csv', 'a') as out:
             for index, sentence in enumerate(file):
@@ -161,7 +161,7 @@ def process(out_file, sentence, i=0, transliterate=False):
     if transliterate:
         out_file.write(trans(sentence) + '\n')
     else:
-        out_file.write(trans(translate(sentence)) + '\n')
+        out_file.write(trans(translate(sentence), fallback=lambda: trans(sentence, transliterate=transliterate)) + '\n')
     current_time = time.time() - start_time
     words_per_second = len(sentence) / current_time
     output_color(words_per_second)
