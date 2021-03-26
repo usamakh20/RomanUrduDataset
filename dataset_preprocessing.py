@@ -161,7 +161,9 @@ def process(out_file, sentence, i=0, transliterate=False):
     if transliterate:
         out_file.write(trans(sentence) + '\n')
     else:
-        out_file.write(trans(translate(sentence), fallback=lambda: trans(trans(sentence, transliterate=transliterate))) + '\n')
+        out_file.write(trans(translate(sentence),
+                             fallbacks=[lambda x: trans(trans(sentence, transliterate=transliterate), fallbacks=x),
+                                        lambda x: translate(translate(sentence), src='ur', dst='hi')]) + '\n')
     current_time = time.time() - start_time
     words_per_second = len(sentence) / current_time
     output_color(words_per_second)

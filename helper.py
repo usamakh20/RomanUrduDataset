@@ -40,7 +40,7 @@ class Colors:
 #     return ' '.join(transliterated)
 
 
-def trans(text, urdu_to_roman=True, transliterate=True, fallback=None):
+def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None):
     result = []
     length = transliteration_limit if transliterate else translation_limit
     for sentence in re.findall(r'(.{1,' + re.escape(str(length)) + r'})(?=\s|$)', text):
@@ -56,8 +56,8 @@ def trans(text, urdu_to_roman=True, transliterate=True, fallback=None):
 
                 soup = BeautifulSoup(r.text, 'html.parser')
                 result_list = soup.find('div', id='ctl00_inpageResult' + ('ing' if transliterate else '')).find_all('p')
-                if not result_list and fallback:
-                    return fallback()
+                if not result_list and fallbacks:
+                    return fallbacks[0](fallbacks[1:])
                 else:
                     result.append(result_list[-1].text.strip())
                 break
@@ -92,9 +92,10 @@ def translate(text, src='auto', dst='ur'):
     """
     while True:
         try:
-            translated = translator.translate(text, dest=dst, src=src).text
-            if translated != text:
-                return translated
+            translated = translator.translate(text, dest=dst, src=src)
+            result = translated.pronunciation if dst == 'hi' else translated.text
+            if result != text:
+                return result
             else:
                 raise Exception("Google API not working!!")
         except Exception as e:
