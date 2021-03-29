@@ -141,13 +141,25 @@ def fun6(count):
                         process(out, flow(sentence, mappings), i=index)
 
 
-def fun7(count):
-    mappings = [sub_initial_urdu, str.strip, sub_quotes, lambda string: string.replace(',', '|'), sub_space]
-    with open(glue_dir + 'XQuAD/Urdu/XQuAD_ur.csv') as file:
-        with open(glue_dir + 'XQuAD/Roman Urdu/XQuAD_ru.csv', 'a') as out:
-            for index, sentence in enumerate(file):
-                if index > count or count == 0:
-                    process(out, flow(sentence, mappings), i=index, transliterate=True)
+# def fun7(count):
+#     mappings = [sub_initial_urdu, str.strip, sub_quotes, sub_space]
+#     with open(glue_dir + 'XQuAD/Urdu/XQuAD_ur.csv') as file:
+#         with open(glue_dir + 'XQuAD/Roman Urdu/XQuAD_ru.csv', 'a') as out:
+#             for index, sentence in enumerate(file):
+#                 if index > count or count == 0:
+#                     process(out, flow(sentence, mappings), i=index, transliterate=True)
+
+
+def fun8(count):
+    mappings = [sub_initial_urdu, str.strip, sub_quotes, sub_space]
+    for split in ['train', 'test', 'dev']:
+        with open(glue_dir + 'NLI/Urdu/NLI.ur.{}.tsv'.format(split)) as file:
+            with open(glue_dir + 'NLI/Roman Urdu/NLI.ru.{}.tsv'.format(split), 'a') as out:
+                for index, sentence in enumerate(file):
+                    if index > count or count == 0:
+                        process(out, flow(sentence, mappings), i=index, transliterate=True,
+                                before=lambda s: ' | '.join(s.split('\t')[:-1]),
+                                after=lambda s: s.replace('|', '\t') + '\t' + sentence.split('\t')[-1][:-1])
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
@@ -156,14 +168,17 @@ def process_sentences(out_file, count, numbered_sentences, start=False, i=0, tra
             process(out_file, sentence, index if i == 0 else i, transliterate)
 
 
-def process(out_file, sentence, i=0, transliterate=False):
+def process(out_file, sentence, i=0, transliterate=False, before=lambda x: x, after=lambda x: x):
     start_time = time.time()
     if transliterate:
-        out_file.write(trans(sentence) + '\n')
+        out_file.write(after(
+            trans(before(sentence), fallbacks=[lambda x: translate(before(sentence), src='ur', dst='hi')])) + '\n')
     else:
-        out_file.write(trans(translate(sentence),
-                             fallbacks=[lambda x: trans(trans(sentence, transliterate=transliterate), fallbacks=x),
-                                        lambda x: translate(translate(sentence), src='ur', dst='hi')]) + '\n')
+        out_file.write(after(trans(translate(before(sentence)),
+                                   fallbacks=[
+                                       lambda x: trans(trans(before(sentence), transliterate=transliterate),
+                                                       fallbacks=x),
+                                       lambda x: translate(translate(before(sentence)), src='ur', dst='hi')])) + '\n')
     current_time = time.time() - start_time
     words_per_second = len(sentence) / current_time
     output_color(words_per_second)
