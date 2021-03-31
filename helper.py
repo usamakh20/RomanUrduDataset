@@ -82,6 +82,15 @@ def preprocess_urdu(string):
     return string.replace('یٰ', 'ی')
 
 
+def preprocess_english(string):
+    """
+    Required for checking Google API not returning same text
+    :param string:
+    :return: preprocessed string
+    """
+    return string.replace('.', '')
+
+
 def translate(text, src='auto', dst='ur'):
     """
     default english to urdu translation using google API
@@ -94,7 +103,7 @@ def translate(text, src='auto', dst='ur'):
         try:
             translated = translator.translate(text, dest=dst, src=src)
             result = translated.pronunciation if dst == 'hi' else translated.text
-            if result != text:
+            if preprocess_english(result) != text:
                 return result
             else:
                 raise Exception("Google API not working!!")
