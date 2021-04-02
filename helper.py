@@ -99,18 +99,22 @@ def translate(text, src='auto', dst='ur'):
     :param dst: destination language defaults to urdu
     :return: translated text
     """
-    while True:
-        try:
-            translated = translator.translate(text, dest=dst, src=src)
-            result = translated.pronunciation if dst == 'hi' else translated.text
-            if preprocess_english(result) != text:
-                return result
-            else:
-                raise Exception("Google API not working!!")
-        except Exception as e:
-            print(e)
-            time.sleep(5)
-            pass
+    result = []
+    for sentence in re.findall(r'(.{1,' + re.escape(str(2000)) + r'})(?=\s|$)', text):
+        while True:
+            try:
+                translated = translator.translate(sentence, dest=dst, src=src)
+                output = translated.pronunciation if dst == 'hi' else translated.text
+                if preprocess_english(output) != sentence:
+                    result.append(output)
+                    break
+                else:
+                    raise Exception("Google API not working!!")
+            except Exception as e:
+                print(e)
+                time.sleep(5)
+                pass
+    return ' '.join(result)
 
 
 if __name__ == '__main__':
