@@ -73,6 +73,7 @@ def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None, custom_l
                     new_len = length-1
                     if int(length/2) > 0:
                         new_len = int(length/2)
+                    print("Using custom length: ",new_len)
                     return trans(text, urdu_to_roman, transliterate, fallbacks, new_len)
                 pass
 
