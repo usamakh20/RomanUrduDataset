@@ -94,10 +94,13 @@ def fun6(count):
 
 def fun8(count):
     mappings = [sub_initial_urdu, str.strip, sub_quotes, sub_space]
-    for split in ['train', 'test', 'dev']:
-        with open(glue_dir + 'NLI/Urdu/NLI.ur.{}.tsv'.format(split)) as file:
-            with open(glue_dir + 'NLI/Roman Urdu/NLI.ru.{}.tsv'.format(split), 'a') as out:
-                for index, sentence in enumerate(file):
+    file_cats = ['train', 'test', 'dev']
+    file_name_template = glue_dir + 'NLI/Urdu/NLI.ur.{}.tsv'
+    for i in range(len(file_cats)):
+        prev_lines = file_len(file_name_template.format(file_cats[i-1] if i>0 else 0))
+        with open(file_name_template.format(file_cats[i])) as file:
+            with open(glue_dir + 'NLI/Roman Urdu/NLI.ru.{}.tsv'.format(file_cats[i]), 'a') as out:
+                for index, sentence in enumerate(file,start=prev_lines):
                     if index > count or count == 0:
                         process(out, flow(sentence, mappings), i=index, transliterate=True,
                                 before=lambda s: ' | '.join(s.split('\t')[:-1]),

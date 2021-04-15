@@ -9,6 +9,7 @@ base_transliteration_url = 'https://www.ijunoon.com/transliteration/'
 base_translation_url = 'https://translate.ijunoon.com/'
 transliteration_limit = 500
 translation_limit = 1500
+timeout = 300
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Firefox/80.0'}
 translator = Translator()
 
@@ -41,9 +42,12 @@ class Colors:
 #     return ' '.join(transliterated)
 
 
-def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None):
+def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None, custom_len=None):
     result = []
-    length = transliteration_limit if transliterate else translation_limit
+    if custom_len:
+        length = custom_len
+    else:
+        length = transliteration_limit if transliterate else translation_limit
     for sentence in re.findall(r'(.{1,' + re.escape(str(length)) + r'})(?=\s|$)', text):
         while True:
             try:
@@ -51,9 +55,9 @@ def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None):
                     transliteration_url = base_transliteration_url + 'urdu-to-roman/' \
                         if urdu_to_roman else base_transliteration_url
                     r = requests.post(transliteration_url, headers=headers, data={'text': preprocess_urdu(sentence)},
-                                      timeout=300)
+                                      timeout=timeout)
                 else:
-                    r = requests.get(base_translation_url, headers=headers, params={'text': sentence}, timeout=300)
+                    r = requests.get(base_translation_url, headers=headers, params={'text': sentence}, timeout=timeout)
 
                 soup = BeautifulSoup(r.text, 'html.parser')
                 result_list = soup.find('div', id='ctl00_inpageResult' + ('ing' if transliterate else '')).find_all('p')
@@ -65,6 +69,11 @@ def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None):
             except Exception as e:
                 print(e)
                 time.sleep(5)
+                if length > 1:
+                    new_len = length-1
+                    if int(length/2) > 0:
+                        new_len = int(length/2)
+                    return trans(text, urdu_to_roman, transliterate, fallbacks, new_len)
                 pass
 
     return ' '.join(result)
@@ -83,6 +92,15 @@ def preprocess_urdu(string):
     return string.replace('یٰ', 'ی')
 
 
+def preprocess_english(string):
+    """
+    Required for checking Google API not returning same text
+    :param string:
+    :return: preprocessed string
+    """
+    return re.sub('[!.]', '', string)
+
+
 def translate(text, src='auto', dst='ur'):
     """
     default english to urdu translation using google API
@@ -91,18 +109,22 @@ def translate(text, src='auto', dst='ur'):
     :param dst: destination language defaults to urdu
     :return: translated text
     """
-    while True:
-        try:
-            translated = translator.translate(text, dest=dst, src=src)
-            result = translated.pronunciation if dst == 'hi' else translated.text
-            if result != text:
-                return result
-            else:
-                raise Exception("Google API not working!!")
-        except Exception as e:
-            print(e)
-            time.sleep(5)
-            pass
+    result = []
+    for sentence in re.findall(r'(.{1,' + re.escape(str(2000)) + r'})(?=\s|$)', text):
+        while True:
+            try:
+                translated = translator.translate(sentence, dest=dst, src=src)
+                output = translated.pronunciation if dst == 'hi' else translated.text
+                if preprocess_english(output) != sentence:
+                    result.append(output)
+                    break
+                else:
+                    raise Exception("Google API not working!!")
+            except Exception as e:
+                print(e)
+                time.sleep(5)
+                pass
+    return ' '.join(result)
 
 
 def file_len(path):
