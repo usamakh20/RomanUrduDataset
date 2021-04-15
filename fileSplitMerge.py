@@ -58,7 +58,7 @@ def get_files_to_split(excluded_files, size: int = 100000000):
     for root, _, filenames in os.walk('.'):
         for file in filenames:
             file_path = os.path.join(root, file)
-            if file_path not in excluded_files and os.stat(file_path).st_size >= size and file != current_script:
+            if file_path not in excluded_files and os.stat(file_path).st_size > size and file != current_script:
                 result.append(file_path)
 
     return result
