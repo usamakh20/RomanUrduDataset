@@ -1,4 +1,5 @@
 import re
+import os
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -104,16 +105,71 @@ def translate(text, src='auto', dst='ur'):
             pass
 
 
+def file_len(path):
+    if os.path.isfile(path):
+        with open(path) as f:
+            for i, l in enumerate(f):
+                pass
+        return i + 1
+    else:
+        return 0
+
+
+def flow(seed, funcs):
+    for func in funcs:
+        seed = func(seed)
+    return seed
+
+
+def sub_initial_urdu(string):
+    return re.sub(r"[/\\<>]", ' ', string)
+
+
+def sub_initial(string):
+    return re.sub(r"[^a-zA-Z0-9' ]", ' ', str(string).lower())
+
+
+def sub_quotes(string):
+    return re.sub(r"'\B|\B'|\"", ' ', string)
+
+
+def sub_characters(string):
+    return re.sub(r"(?<=\s)[dp](?=\s|$)", ' ', string)
+
+
+def sub_space(string):
+    return re.sub(r' {2,}', ' ', string)
+
+
+def sub_nextline(string):
+    return re.sub(r'\n', ' ', string)
+
+
+def sub_quote(string):
+    return re.sub(r'\'', ' ', string)
+
+
+def output_color(words_per_second):
+    if words_per_second == 0:
+        print(Colors.NORMAL, end='')
+    elif words_per_second < 20:
+        print(Colors.RED, end='')
+    elif words_per_second < 50:
+        print(Colors.YELLOW, end='')
+    else:
+        print(Colors.GREEN, end='')
+
+
 if __name__ == '__main__':
-    start_time = time.time()
+    start_t = time.time()
     print(trans('تبدیل'))
-    print("Time Taken: %.2f s" % (time.time() - start_time))
-    start_time = time.time()
+    print("Time Taken: %.2f s" % (time.time() - start_t))
+    start_t = time.time()
     print(trans('tabdeel', urdu_to_roman=False))
-    print("Time Taken: %.2f s" % (time.time() - start_time))
-    start_time = time.time()
+    print("Time Taken: %.2f s" % (time.time() - start_t))
+    start_t = time.time()
     print(trans('change', transliterate=False))
-    print("Time Taken: %.2f s" % (time.time() - start_time))
-    start_time = time.time()
+    print("Time Taken: %.2f s" % (time.time() - start_t))
+    start_t = time.time()
     print(translate('summer vacations supposed to be fun , right ?'))
-    print("Time Taken: %.2f s" % (time.time() - start_time))
+    print("Time Taken: %.2f s" % (time.time() - start_t))

@@ -1,11 +1,8 @@
-import re
-import os
-import time
 import logging
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from helper import trans, Colors, translate
+from helper import *
 
 urdu_data_dir = 'Urdu datasets/'
 eng_data_dir = 'English datasets/'
@@ -14,69 +11,14 @@ logs_dir = 'logs/'
 glue_dir = '../glue-urdu/'
 
 
-def file_len(path):
-    if os.path.isfile(path):
-        with open(path) as f:
-            for i, l in enumerate(f):
-                pass
-        return i + 1
-    else:
-        return 0
-
-
-def flow(seed, funcs):
-    for func in funcs:
-        seed = func(seed)
-    return seed
-
-
-def sub_initial_urdu(string):
-    return re.sub(r"[/\\<>]", ' ', string)
-
-
-def sub_initial(string):
-    return re.sub(r"[^a-zA-Z0-9' ]", ' ', str(string).lower())
-
-
-def sub_quotes(string):
-    return re.sub(r"'\B|\B'|\"", ' ', string)
-
-
-def sub_characters(string):
-    return re.sub(r"(?<=\s)[dp](?=\s|$)", ' ', string)
-
-
-def sub_space(string):
-    return re.sub(r' {2,}', ' ', string)
-
-
-def sub_nextline(string):
-    return re.sub(r'\n', ' ', string)
-
-
-def sub_quote(string):
-    return re.sub(r'\'', ' ', string)
-
-
-def output_color(words_per_second):
-    if words_per_second == 0:
-        print(Colors.NORMAL, end='')
-    elif words_per_second < 20:
-        print(Colors.RED, end='')
-    elif words_per_second < 50:
-        print(Colors.YELLOW, end='')
-    else:
-        print(Colors.GREEN, end='')
-
-
 def fun1():
     data = []
     data_series = pd.read_csv(urdu_data_dir + 'Roman Urdu DataSet.csv', header=None).iloc[:, 0]
     preprocessed_data_series = data_series.apply(
-        lambda l: sub_space(
+        lambda s: sub_space(
             sub_characters(
                 sub_quotes(
-                    sub_initial(l)))))
+                    sub_initial(s)))))
 
     for line in preprocessed_data_series:
         if not line.isspace():
@@ -194,9 +136,9 @@ if __name__ == '__main__':
     choice = input("Enter function: ")
     if os.path.isfile(logs_dir + f'fun{choice}.log'):
         with open(logs_dir + f'fun{choice}.log', 'r') as log_file:
-            for line in log_file:
+            for l in log_file:
                 pass
-            value = int(line.split(':')[-1])
+            value = int(l.split(':')[-1])
     else:
         value = 0
 
