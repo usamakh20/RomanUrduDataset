@@ -70,14 +70,23 @@ def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None, custom_l
                 print(e)
                 time.sleep(5)
                 if length > 1:
-                    new_len = length-1
-                    if int(length/2) > 0:
-                        new_len = int(length/2)
-                    print("Using custom length: ",new_len)
+                    new_len = length - 1
+                    if int(length / 2) > 0:
+                        new_len = int(length / 2)
+                    print("Using custom length: ", new_len)
                     return trans(text, urdu_to_roman, transliterate, fallbacks, new_len)
                 pass
 
     return ' '.join(result)
+
+
+def manual_trans(text):
+    result = []
+    for word in text.split(' ')[::-1]:
+        print(word)
+        result.append(trans(word))
+
+    return ' '.join(result[::-1])
 
 
 def is_english_letters(string):

@@ -21,7 +21,7 @@ parser.add_argument("--merge", help="merge all files within this directory previ
 parser.add_argument("--list", help="list all files that will be split given the specified size",
                     action="store_true")
 parser.add_argument("--size", help="file size limit in bytes for splitting. Defaults to 100000000", type=int,
-                    default=100000000)
+                    default=40000000)
 
 
 def readable_size(num, suffix='B'):
