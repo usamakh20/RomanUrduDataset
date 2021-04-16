@@ -7,7 +7,7 @@ from googletrans import Translator
 
 base_transliteration_url = 'https://www.ijunoon.com/transliteration/'
 base_translation_url = 'https://translate.ijunoon.com/'
-transliteration_limit = 100
+transliteration_limit = 300
 translation_limit = 1500
 timeout = 300
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Firefox/80.0'}
