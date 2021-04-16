@@ -44,7 +44,6 @@ class Colors:
 
 def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None, custom_len=None):
     result = []
-    fails = 0
     if custom_len:
         length = custom_len
     else:
@@ -70,15 +69,12 @@ def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None, custom_l
             except Exception as e:
                 print(e)
                 time.sleep(5)
-                # if fails > 10:
-                #     return manual_trans(text)
                 if length > 20:
                     new_len = length - 1
                     if int(length / 2) > 20:
                         new_len = int(length / 2)
                     print("Using custom length: ", new_len)
                     return trans(text, urdu_to_roman, transliterate, fallbacks, new_len)
-                fails += 1
                 pass
 
     return ' '.join(result)
@@ -103,7 +99,7 @@ def preprocess_urdu(string):
     :param string:
     :return: preprocessed string
     """
-    return sub_space(re.sub("[،\u200f]", ' ', string.replace('یٰ', 'ی')))
+    return sub_space(re.sub("[\u200f]", ' ', string.replace('یٰ', 'ی')))
 
 
 def preprocess_english(string):
