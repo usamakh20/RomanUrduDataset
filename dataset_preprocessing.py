@@ -98,14 +98,37 @@ def fun8(count):
     file_cats = ['train', 'test', 'dev']
     file_name_template = glue_dir + 'NLI/Urdu/NLI.ur.{}.tsv'
     for i in range(len(file_cats)):
-        prev_lines += file_len(file_name_template.format(file_cats[i-1] if i>0 else 0))
+        prev_lines += file_len(file_name_template.format(file_cats[i - 1] if i > 0 else 0))
         with open(file_name_template.format(file_cats[i])) as file:
             with open(glue_dir + 'NLI/Roman Urdu/NLI.ru.{}.tsv'.format(file_cats[i]), 'a') as out:
-                for index, sentence in enumerate(file,start=prev_lines):
+                for index, sentence in enumerate(file, start=prev_lines):
                     if index > count or count == 0:
                         process(out, flow(sentence, mappings), i=index, transliterate=True,
                                 before=lambda s: ' | '.join(s.split('\t')[:-1]),
                                 after=lambda s: s.replace('|', '\t') + '\t' + sentence.split('\t')[-1][:-1])
+
+
+def fun9(count):
+    prev_lines = 0
+    mappings = [sub_initial_urdu, preprocess_urdu, str.strip, sub_quotes, sub_space]
+    file_cats = ['train', 'test', 'dev']
+    file_name_template = glue_dir + 'POS/Urdu/pos.ur.{}.conllu'
+    for i in range(len(file_cats)):
+        prev_lines += file_len(file_name_template.format(file_cats[i - 1] if i > 0 else 0))
+        with open(file_name_template.format(file_cats[i])) as file:
+            with open(glue_dir + 'POS/Roman Urdu/pos.ru.{}.conllu'.format(file_cats[i]), 'a') as out:
+                for index, sentence in enumerate(file, start=prev_lines):
+                    if index > count or count == 0:
+                        if 'sent_id' in sentence:
+                            out.write(('' if index == prev_lines else '\n')+sentence)
+                        elif '\n' != sentence:
+                            if 'text' in sentence:
+                                process(out, flow(sentence, mappings), i=index, transliterate=True)
+                            else:
+                                temp = sentence.split('\t')
+                                process(out, flow(sentence, mappings), i=index, transliterate=True,
+                                        before=lambda s: ' | '.join(s.split('\t')[1:3]).strip(),
+                                        after=lambda s: temp[0] + '\t' + s.replace(' | ', '\t') + '\t' + '\t'.join(temp[3:]).strip())
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
@@ -150,3 +173,4 @@ if __name__ == '__main__':
     locals()['fun' + choice](value)
 
 # Todo: uppc corpus, multisenti-master,  urmono
+#  1. Use rule base roman urdu transliterator for left over urdu words in roman urdu text
