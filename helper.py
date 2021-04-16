@@ -7,7 +7,7 @@ from googletrans import Translator
 
 base_transliteration_url = 'https://www.ijunoon.com/transliteration/'
 base_translation_url = 'https://translate.ijunoon.com/'
-transliteration_limit = 500
+transliteration_limit = 100
 translation_limit = 1500
 timeout = 300
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Firefox/80.0'}
@@ -69,9 +69,9 @@ def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None, custom_l
             except Exception as e:
                 print(e)
                 time.sleep(5)
-                if length > 1:
+                if length > 20:
                     new_len = length-1
-                    if int(length/2) > 0:
+                    if int(length/2) > 20:
                         new_len = int(length/2)
                     print("Using custom length: ",new_len)
                     return trans(text, urdu_to_roman, transliterate, fallbacks, new_len)
@@ -90,7 +90,7 @@ def preprocess_urdu(string):
     :param string:
     :return: preprocessed string
     """
-    return string.replace('یٰ', 'ی')
+    return string.replace('یٰ', 'ی').replace('،',' ')
 
 
 def preprocess_english(string):
