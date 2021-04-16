@@ -120,7 +120,7 @@ def fun9(count):
                 for index, sentence in enumerate(file, start=prev_lines):
                     if index > count or count == 0:
                         if 'sent_id' in sentence:
-                            out.write(('' if index == prev_lines else '\n')+sentence)
+                            out.write(('' if index == prev_lines else '\n') + sentence)
                         elif '\n' != sentence:
                             if 'text' in sentence:
                                 process(out, flow(sentence, mappings), i=index, transliterate=True)
@@ -128,7 +128,25 @@ def fun9(count):
                                 temp = sentence.split('\t')
                                 process(out, flow(sentence, mappings), i=index, transliterate=True,
                                         before=lambda s: ' | '.join(s.split('\t')[1:3]).strip(),
-                                        after=lambda s: temp[0] + '\t' + s.replace(' | ', '\t') + '\t' + '\t'.join(temp[3:]).strip())
+                                        after=lambda s: temp[0] + '\t' + s.replace(' | ', '\t') + '\t' + '\t'.join(
+                                            temp[3:]).strip())
+
+
+def fun10(count):
+    prev_lines = 0
+    mappings = [sub_initial_urdu, str.strip, sub_quotes, sub_space]
+    file_cats = ['train', 'test']
+    file_name_template = glue_dir + 'NER/Urdu/NER.ur.{}'
+    for i in range(len(file_cats)):
+        prev_lines += file_len(file_name_template.format(file_cats[i - 1] if i > 0 else 0))
+        with open(file_name_template.format(file_cats[i])) as file:
+            with open(glue_dir + 'NER/Roman Urdu/NER.ru.{}'.format(file_cats[i]), 'a') as out:
+                for index, sentence in enumerate(file, start=prev_lines):
+                    if index > count or count == 0:
+                        if sentence != '\n':
+                            process(out, flow(sentence.split('\t')[0], mappings), i=index, transliterate=True,
+                                    after=lambda s: s+'\t'+sentence.strip().split('\t')[-1])
+                        else: out.write('\n')
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
