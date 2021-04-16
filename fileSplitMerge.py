@@ -82,9 +82,11 @@ if __name__ == '__main__':
 
     files = []
     if os.path.isfile(exclude_list_file):
-        with open(exclude_list_file, 'r') as f: files = f.read().strip().split('\n')
+        with open(exclude_list_file, 'r') as f:
+            files = f.read().strip().split('\n')
     else:
-        with open(exclude_list_file, 'w'): pass
+        with open(exclude_list_file, 'w'):
+            pass
 
     # Read arguments from the command line
     args = parser.parse_args()
@@ -98,5 +100,5 @@ if __name__ == '__main__':
         [print(file) for file in get_files_to_split(files, args.size)]
 
 # Todo:
-#1. enable adding folders to excluded files
-#2. add a check to so excluded_files itself is not split
+# 1. enable adding folders to excluded files
+# 2. add a check to so excluded_files itself is not split
