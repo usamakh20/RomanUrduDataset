@@ -83,13 +83,13 @@ def fun6(count):
                         process(out, flow(sentence, mappings), i=index)
 
 
-# def fun7(count):
-#     mappings = [sub_initial_urdu, str.strip, sub_quotes, sub_space]
-#     with open(glue_dir + 'XQuAD/Urdu/XQuAD_ur.csv') as file:
-#         with open(glue_dir + 'XQuAD/Roman Urdu/XQuAD_ru.csv', 'a') as out:
-#             for index, sentence in enumerate(file):
-#                 if index > count or count == 0:
-#                     process(out, flow(sentence, mappings), i=index, transliterate=True)
+def fun7(count):
+    mappings = [sub_initial_urdu, str.strip, sub_quotes, sub_space]
+    with open(glue_dir + 'XQuAD/Urdu/XQuAD_ur.csv') as file:
+        with open(glue_dir + 'XQuAD/Roman Urdu/XQuAD_ru.csv', 'a') as out:
+            for index, sentence in enumerate(file):
+                if index > count or count == 0:
+                    process(out, flow(sentence, mappings), i=index, transliterate=True)
 
 
 def fun8(count):
