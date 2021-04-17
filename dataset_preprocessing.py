@@ -145,8 +145,27 @@ def fun10(count):
                     if index > count or count == 0:
                         if sentence != '\n':
                             process(out, flow(sentence.split('\t')[0], mappings), i=index, transliterate=True,
-                                    after=lambda s: s+'\t'+sentence.strip().split('\t')[-1])
-                        else: out.write('\n')
+                                    after=lambda s: s + '\t' + sentence.strip().split('\t')[-1])
+                        else:
+                            out.write('\n')
+
+
+def fun11(count):
+    prev_lines = 0
+    mappings = [sub_initial, sub_quotes, sub_space, str.strip]
+    file_cats = ['train', 'test']
+    file_name_template = glue_dir + 'SentiMix/{}/SentiMix.{{}}.{}.csv'
+    for i in range(len(file_cats)):
+        urdu_file = file_name_template.format('Roman Urdu', 'ru')
+        prev_lines += file_len(urdu_file.format(file_cats[i - 1] if i > 0 else 0))
+        with open(urdu_file.format(file_cats[i])) as file:
+            with open(file_name_template.format('Urdu', 'ur').format(file_cats[i]), 'a') as out:
+                out.write('uid,sentence,sentiment\n')
+                for index, sentence in enumerate(file, start=prev_lines):
+                    if (index > count or count == 0) and index > 0:
+                        process(out, flow(sentence.split(',')[1], mappings), i=index, transliterate=True,
+                                urdu_to_roman=False,
+                                after=lambda s: sentence.split(',')[0]+','+s+','+sentence.split(',')[2].strip())
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
@@ -155,11 +174,12 @@ def process_sentences(out_file, count, numbered_sentences, start=False, i=0, tra
             process(out_file, sentence, index if i == 0 else i, transliterate)
 
 
-def process(out_file, sentence, i=0, transliterate=False, before=lambda x: x, after=lambda x: x):
+def process(out_file, sentence, i=0, transliterate=False, urdu_to_roman=True, before=lambda x: x, after=lambda x: x):
     start_time = time.time()
     if transliterate:
         out_file.write(after(
-            trans(before(sentence), fallbacks=[lambda x: translate(before(sentence), src='ur', dst='hi')])) + '\n')
+            trans(before(sentence), urdu_to_roman=urdu_to_roman,
+                  fallbacks=[lambda x: translate(before(sentence), src='ur', dst='hi')])) + '\n')
     else:
         out_file.write(after(trans(translate(before(sentence)),
                                    fallbacks=[
