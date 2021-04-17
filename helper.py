@@ -99,7 +99,7 @@ def preprocess_urdu(string):
     :param string:
     :return: preprocessed string
     """
-    return sub_space(re.sub("[\u200f]", ' ', string.replace('یٰ', 'ی')))
+    return sub_space(re.sub("[\u200f\u200e]", ' ', string.replace('یٰ', 'ی')))
 
 
 def preprocess_english(string):

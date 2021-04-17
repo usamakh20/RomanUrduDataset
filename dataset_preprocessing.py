@@ -134,7 +134,7 @@ def fun9(count):
 
 def fun10(count):
     prev_lines = 0
-    mappings = [sub_initial_urdu, str.strip, sub_quotes, sub_space]
+    mappings = [sub_initial_urdu, sub_quotes, preprocess_urdu, sub_space, str.strip]
     file_cats = ['train', 'test']
     file_name_template = glue_dir + 'NER/Urdu/NER.ur.{}'
     for i in range(len(file_cats)):
