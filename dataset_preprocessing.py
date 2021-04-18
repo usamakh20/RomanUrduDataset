@@ -162,7 +162,7 @@ def fun11(count):
             with open(file_name_template.format('Urdu', 'ur').format(file_cats[i]), 'a') as out:
                 out.write('uid,sentence,sentiment\n')
                 for index, sentence in enumerate(file, start=prev_lines):
-                    if (index > count or count == 0) and index > 0:
+                    if (index > count or count == 0) and index > prev_lines:
                         process(out, flow(sentence.split(',')[1], mappings), i=index, transliterate=True,
                                 urdu_to_roman=False,
                                 after=lambda s: sentence.split(',')[0]+','+s+','+sentence.split(',')[2].strip())
