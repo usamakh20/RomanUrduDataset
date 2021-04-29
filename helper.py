@@ -43,6 +43,10 @@ class Colors:
 
 
 def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None, custom_len=None):
+    """
+    Function performs roman urdu to urdu and urdu to roman urdu transliteration. It also does English to urdu
+    translation using ijunoon.
+    """
     result = []
     if custom_len:
         length = custom_len
@@ -60,7 +64,7 @@ def trans(text, urdu_to_roman=True, transliterate=True, fallbacks=None, custom_l
                     r = requests.get(base_translation_url, headers=headers, params={'text': sentence}, timeout=timeout)
 
                 soup = BeautifulSoup(r.text, 'html.parser')
-                result_list = soup.find('div', id='ctl00_inpageResult' + ('ing' if transliterate else '')).find_all('p')
+                result_list = soup.find('div', id='ctl00_inpageResult').find_all('p')
                 if not result_list and fallbacks:
                     return fallbacks[0](fallbacks[1:])
                 else:
@@ -114,6 +118,8 @@ def preprocess_english(string):
 def translate(text, src='auto', dst='ur'):
     """
     default english to urdu translation using google API
+    Can translate from any language to any language.
+    Can be used for Urdu to roman hindi translation by using dst='hi'
     :param text: text to translate
     :param src: source language. defaults to auto
     :param dst: destination language defaults to urdu
