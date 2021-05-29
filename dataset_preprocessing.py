@@ -165,7 +165,39 @@ def fun11(count):
                     if (index > count or count == 0) and index > prev_lines:
                         process(out, flow(sentence.split(',')[1], mappings), i=index, transliterate=True,
                                 urdu_to_roman=False,
-                                after=lambda s: sentence.split(',')[0]+','+s+','+sentence.split(',')[2].strip())
+                                after=lambda s: sentence.split(',')[0] + ',' + s + ',' + sentence.split(',')[2].strip())
+
+
+def fun12(count):
+    mappings = [sub_initial_urdu, sub_quotes, sub_space, str.strip]
+    with open(urdu_data_dir + 'dr_omer/dataaa.txt', 'r') as file:
+        with open(roman_urdu_data_dir + 'data_roman.txt', 'a') as out:
+            for index, sentence in enumerate(file):
+                if index > count or count == 0:
+                    process(out, flow(sentence, mappings), i=index, transliterate=True,
+                            after=lambda s: str.strip(sub_space(sub_initial(s))))
+
+
+def fun13(count):
+    mappings = [sub_initial_urdu, sub_quotes, sub_space, str.strip]
+    with open(urdu_data_dir + 'dr_omer/transcription.txt', 'r') as file:
+        with open(roman_urdu_data_dir + 'transcription_roman.txt', 'a') as out:
+            for index, sentence in enumerate(file):
+                if index > count or count == 0:
+                    process(out, flow(sentence, mappings), i=index, transliterate=True,
+                            before=lambda s: s.split(maxsplit=1)[1].strip(),
+                            after=lambda s: sentence.split(maxsplit=1)[0] + ' ' + str.strip(sub_space(sub_initial(s))))
+
+
+def fun14(count):
+    mappings = [sub_initial_urdu, sub_quotes, sub_space, str.strip]
+    sentences = pd.read_csv(urdu_data_dir + 'dr_omer/Combined.csv', header=None, sep=',')\
+        .replace(np.nan, '', regex=True).to_numpy()
+    with open(roman_urdu_data_dir + 'Combined_roman.csv', 'a') as out:
+        for index, sentence in enumerate(sentences):
+            if index > count or count == 0:
+                process(out, flow(sentence[1], mappings), i=index, transliterate=True,
+                        after=lambda s: sentence[0] + ',' + str.strip(sub_space(sub_initial(s))))
 
 
 def process_sentences(out_file, count, numbered_sentences, start=False, i=0, transliterate=False):
